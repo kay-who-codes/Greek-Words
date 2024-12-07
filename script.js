@@ -7,28 +7,33 @@ const greekPhrases = [
     "Άνθρωπος εἶναι το μέτρον"
 ];
 
-// Function to fetch a translation of a Greek phrase
+// Function to fetch a translation of a Greek phrase using the LibreTranslate API
 async function translateGreekPhrase(greekPhrase) {
     try {
+        // Making a POST request to the LibreTranslate API for translation
         const response = await fetch("https://libretranslate.com/translate", {
             method: "POST",
             body: JSON.stringify({
-                q: greekPhrase,
-                source: "auto", // auto-detect the source language (Greek)
-                target: "en",   // translate to English
-                format: "text",
-                alternatives: 3, // optional: request alternative translations
-                api_key: ""      // LibreTranslate does not require an API key for free use
+                q: greekPhrase,           // The Greek phrase to translate
+                source: "auto",           // Auto-detect source language
+                target: "en",             // Translate to English
+                format: "text",           // Text format
+                api_key: ""               // No API key is needed
             }),
             headers: {
                 "Content-Type": "application/json"
             }
         });
 
+        // Parsing the JSON response
         const data = await response.json();
 
-        // If translation is successful, return the translated text
-        return data.translatedText;
+        // Return the translated text or an error message if response is not valid
+        if (data && data.translatedText) {
+            return data.translatedText;
+        } else {
+            throw new Error("Translation failed.");
+        }
     } catch (error) {
         console.error("Error with translation:", error);
         return "Translation failed.";
